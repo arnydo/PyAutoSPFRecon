@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+ php:
+  image: spfybind:latest
+  build:
+    context: .
+  ports:
+   - '53:53'
+  # environment:
+  #  - PMA_HOST=mysql
+  #  - PMA_PORT=3306
+  #  - PMA_USER=root
+  #  - PMA_PASSWORD=weakpassword123
+  #  - PMA_ARBITRARY=1
