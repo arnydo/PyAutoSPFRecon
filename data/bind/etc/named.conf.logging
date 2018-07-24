@@ -1,0 +1,12 @@
+logging{
+  channel query_log {
+    file "/var/lib/bind/autorecon.log" versions 3 size 5m;
+    severity debug;
+    print-time yes;
+    print-severity yes;
+    print-category yes;
+  };
+  category queries{
+    query_log;
+  };
+};
