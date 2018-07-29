@@ -10,5 +10,5 @@ services:
    - '53:53/tcp'
   volumes:
    - ./data:/data
-  # environment:
-  #  - PMA_HOST=mysql
+  environment:
+    - DOMAIN=autorecon.kyleparrish.com
