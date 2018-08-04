@@ -41,7 +41,10 @@ create_bind_cache_dir() {
 
 create_zone_file() {
   touch ${BIND_DATA_DIR}/etc/${DOMAIN}
-  echo "$TTL 3D" > ${BIND_DATA_DIR}/etc/${DOMAIN}
+  chown ${BIND_USER}:${BIND_USER} ${BIND_DATA_DIR}/etc/${DOMAIN}
+  chmod 0775 ${BIND_DATA_DIR}/etc/${DOMAIN}
+
+  echo "\$TTL 3D" > ${BIND_DATA_DIR}/etc/${DOMAIN}
   echo "@   IN  SOA ${SOA}. ${SOA_EMAIL} (" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
   echo "199802151   ; serial, todays date + todays serial #" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
   echo "21600   ; refresh, seconds" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
@@ -56,16 +59,18 @@ create_zone_file() {
 add_zone () {
   echo "zone \"${DOMAIN}\" {" >> ${BIND_DATA_DIR}/etc/named.conf.local
   echo "  type master;" >> ${BIND_DATA_DIR}/etc/named.conf.local
-  echo "  file ${BIND_DATA_DIR}/etc/${DOMAIN}" >> ${BIND_DATA_DIR}/etc/named.conf.local
+  echo "  file \"${BIND_DATA_DIR}/etc/${DOMAIN}\";" >> ${BIND_DATA_DIR}/etc/named.conf.local
   echo "};" >> ${BIND_DATA_DIR}/etc/named.conf.local
 }
 
 logging_config (){
-  echo "include \"${BIND_DATA_DIR}/etc/named.conf.logging\";" >> ${BIND_DATA_DIR}/etc/named/named.conf
+  echo "include \"/etc/bind/named.conf.logging\";" >> ${BIND_DATA_DIR}/etc/named.conf
   touch ${BIND_DATA_DIR}/etc/named.conf.logging
-  
+  chown ${BIND_USER}:${BIND_USER} ${BIND_DATA_DIR}/etc/named.conf.logging
+  chmod 0775 ${BIND_DATA_DIR}/etc/named.conf.logging
+
   echo "logging {" >> ${BIND_DATA_DIR}/etc/named.conf.logging
- 
+
   echo "  channel query_log {" >> ${BIND_DATA_DIR}/etc/named.conf.logging
   echo "    file \"/var/lib/bind/query.log\" versions 3 size 100M;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
   echo "    severity info;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
@@ -83,7 +88,7 @@ logging_config (){
   echo "    print-time yes;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
   echo "    };" >> ${BIND_DATA_DIR}/etc/named.conf.logging
   echo "  category default       { default_log; };" >> ${BIND_DATA_DIR}/etc/named.conf.logging
-  
+
   echo "};" >> ${BIND_DATA_DIR}/etc/named.conf.logging
 }
 
@@ -110,8 +115,3 @@ if [[ -z ${1} ]]; then
 else
 exec "$@"
 fi
-
-# enable querylogging
-echo "Tailing /var/lib/bind/query.log"
-exec tail -f /var/lib/bind/query.log >> /dev/stdout
-exec tail -f /var/lib/bind/default.log >> /dev/stdout
