@@ -12,6 +12,8 @@ RUN rm -rf /etc/apt/apt.conf.d/docker-gzip-indexes \
       bind9=1:${BIND_VERSION}* bind9-host=1:${BIND_VERSION}* dnsutils \
  && rm -rf /var/lib/apt/lists/*
 
+COPY template ${DATA_DIR}/template
+
 COPY entrypoint.sh /sbin/entrypoint.sh
 
 RUN chmod 755 /sbin/entrypoint.sh

@@ -10,8 +10,5 @@ services:
    - '53:53/tcp'
   volumes:
    - ./data:/data
-  environment:
-    - DOMAIN=autorecon.kyleparrish.com
-    - SOA=autorecon.ns.kyleparrish.com
-    - SOA_EMAIL=kyle@kyleparrish.com
-    - NS_IP=165.227.125.5
+  env_file:
+    - .env

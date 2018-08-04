@@ -40,7 +40,7 @@ create_bind_cache_dir() {
 }
 
 create_zone_file() {
-  cp /data/bind/etc/autorecon.template ${BIND_DATA_DIR}/etc/${DOMAIN}
+  cp {$DATA_DIR}/template/autorecon.template ${BIND_DATA_DIR}/etc/${DOMAIN}
 }
 
 set_zone_info() {
