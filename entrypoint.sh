@@ -40,13 +40,17 @@ create_bind_cache_dir() {
 }
 
 create_zone_file() {
-  cp {$DATA_DIR}/template/autorecon.template ${BIND_DATA_DIR}/etc/${DOMAIN}
-}
-
-set_zone_info() {
-  sed -i "s/autorecon.ns.template/${SOA}/" ${BIND_DATA_DIR}/etc/${DOMAIN}
-  sed -i "s/email@template.com/${SOA_EMAIL}/" ${BIND_DATA_DIR}/etc/${DOMAIN}
-  sed -i "s/nsip/${NS_IP}/" ${BIND_DATA_DIR}/etc/${DOMAIN}
+  touch ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "$TTL 3D" > ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "@   IN  SOA ${SOA}. ${SOA_EMAIL} (" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "199802151   ; serial, todays date + todays serial #" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "21600   ; refresh, seconds" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "3600    ; retry, seconds" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "604800  ; expire, seconds" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "30 )    ; minimum, seconds" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "    NS  ns  ; Inet Address of name server" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "localhost   A   127.0.0.1" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
+  echo "ns  A   ${NS_IP}" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
 }
 
 create_pid_dir
