@@ -60,11 +60,39 @@ add_zone () {
   echo "};" >> ${BIND_DATA_DIR}/etc/named.conf.local
 }
 
+logging_config (){
+  echo "include \"${BIND_DATA_DIR}/etc/named.conf.logging\";" >> ${BIND_DATA_DIR}/etc/named/named.conf
+  touch ${BIND_DATA_DIR}/etc/named.conf.logging
+  
+  echo "logging {" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+ 
+  echo "  channel query_log {" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    file \"/var/lib/bind/query.log\" versions 3 size 100M;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    severity info;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    print-category yes;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    print-severity yes;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    print-time yes;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    };" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "  category queries       { query_log; };" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+
+  echo "  channel default_log {" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    file \"/var/lib/bind/default.log\" versions 3 size 100M;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    severity info;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    print-category yes;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    print-severity yes;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    print-time yes;" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "    };" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  echo "  category default       { default_log; };" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+  
+  echo "};" >> ${BIND_DATA_DIR}/etc/named.conf.logging
+}
+
 create_pid_dir
 create_bind_data_dir
 create_bind_cache_dir
 create_zone_file
 add_zone
+logging_config
 
 # allow arguments to be passed to named
 if [[ ${1:0:1} = '-' ]]; then
@@ -78,7 +106,12 @@ fi
 # default behaviour is to launch named
 if [[ -z ${1} ]]; then
   echo "Starting named..."
-  exec $(which named) -u ${BIND_USER} -g ${EXTRA_ARGS}
+  exec $(which named) -u ${BIND_USER} -f ${EXTRA_ARGS}
 else
 exec "$@"
 fi
+
+# enable querylogging
+echo "Tailing /var/lib/bind/query.log"
+exec tail -f /var/lib/bind/query.log >> /dev/stdout
+exec tail -f /var/lib/bind/default.log >> /dev/stdout
