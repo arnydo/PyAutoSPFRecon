@@ -53,10 +53,18 @@ create_zone_file() {
   echo "ns  A   ${NS_IP}" >> ${BIND_DATA_DIR}/etc/${DOMAIN}
 }
 
+add_zone () {
+  echo "zone \"${DOMAIN}\" {" >> ${BIND_DATA_DIR}/etc/named.conf.local
+  echo "  type master;" >> ${BIND_DATA_DIR}/etc/named.conf.local
+  echo "  file ${BIND_DATA_DIR}/etc/${DOMAIN}" >> ${BIND_DATA_DIR}/etc/named.conf.local
+  echo "};" >> ${BIND_DATA_DIR}/etc/named.conf.local
+}
+
 create_pid_dir
 create_bind_data_dir
 create_bind_cache_dir
 create_zone_file
+add_zone
 
 # allow arguments to be passed to named
 if [[ ${1:0:1} = '-' ]]; then
