@@ -40,7 +40,13 @@ create_bind_cache_dir() {
 }
 
 create_zone_file() {
-  cp /data/bind/etc/autorecon.template /data/bind/etc/${DOMAIN}
+  cp /data/bind/etc/autorecon.template ${BIND_DATA_DIR}/etc/${DOMAIN}
+}
+
+set_zone_info() {
+  sed -i "s/autorecon.ns.template/${SOA}/" ${BIND_DATA_DIR}/etc/${DOMAIN}
+  sed -i "s/email@template.com/${SOA_EMAIL}/" ${BIND_DATA_DIR}/etc/${DOMAIN}
+  sed -i "s/nsip/${NS_IP}/" ${BIND_DATA_DIR}/etc/${DOMAIN}
 }
 
 create_pid_dir
